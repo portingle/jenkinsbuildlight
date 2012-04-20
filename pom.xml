@@ -33,11 +33,12 @@
                     </execution>
                 </executions>
 
+                <!-- mvn scala:run -->
                 <configuration>
                     <launchers>
                         <launcher>
                             <id>demo</id>
-                            <mainClass>portingle.kmtronic.RelayDemo</mainClass>
+                            <mainClass>portingle.jenkinsbuildlight.LoggingMonitor</mainClass>
                         </launcher>
                     </launchers>
                 </configuration>
