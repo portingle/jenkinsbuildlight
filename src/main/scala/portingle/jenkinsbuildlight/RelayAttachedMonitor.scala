@@ -1,6 +1,7 @@
 package portingle.jenkinsbuildlight
 
 import internal.{IndicatorColour, JenkinsLightBuildMonitor, MonitorThread}
+import jenkinsapi.Job
 import portingle.kmtronic.{RelayInstance, WindowsComPort, TwoPortKMtronicRelay}
 
 
@@ -8,6 +9,31 @@ object RelayAttachedMonitor extends JenkinsLightBuildMonitor with App {
   private val relay = new TwoPortKMtronicRelay(new WindowsComPort(5))
 
   start("http://localhost:8080/api/xml")
+
+  def start(api: String) {
+    relay.open()
+    val thread = new MonitorThread(this.updateMonitor)
+    thread.start(api)
+  }
+
+  override def updateMonitor(jobs: Seq[Job]) {
+
+    try {
+      super.updateMonitor(jobs)
+    } catch {
+      case ex => {
+        println("failed updating monitors : " + ex)
+        println("attempting to reopen the relay")
+        try {
+          relay.close()
+          relay.open()
+        } catch {
+          case ex =>
+        }
+      }
+    }
+  }
+
 
   private val flasher = new Flasher {
     var state = true
@@ -19,20 +45,27 @@ object RelayAttachedMonitor extends JenkinsLightBuildMonitor with App {
     val thread = new Thread() {
       override def run() {
         while (true) {
-          state = !state
+          try {
+            state = !state
 
-          relays.foreach {
-            relay => if (state) {
-              relay.powerOn()
+            relays.foreach {
+              relay => if (state) {
+                relay.powerOn()
+              } else {
+                relay.powerOff()
+              }
+            }
+
+            if (state) {
+              Thread.sleep(OnIntervalMs)
             } else {
-              relay.powerOff()
+              Thread.sleep(OffIntervalMs)
             }
           }
-
-          if (state) {
-            Thread.sleep(OnIntervalMs)
-          } else {
-            Thread.sleep(OffIntervalMs)
+          catch {
+            case ex => {
+              println("had error while flashing : " + ex)
+            }
           }
         }
       }
@@ -49,11 +82,6 @@ object RelayAttachedMonitor extends JenkinsLightBuildMonitor with App {
     }
   }
 
-  def start(api: String) {
-    relay.open()
-    val thread = new MonitorThread(this.updateMonitor)
-    thread.start(api)
-  }
 
   protected def lightOn(i: IndicatorColour.Value) {
     println("" + i + ":ON")

@@ -15,11 +15,13 @@ trait JenkinsLightBuildMonitor {
   def updateMonitor(jobs: Seq[Job]) {
     println(jobs)
     val (greenState, redState) = calculateStates(jobs.map(_.state))
+
     setGreenLight(greenState)
     setRedLight(redState)
   }
 
-  private def calculateStates(results: Seq[BuildStatus]): (Option[BuildStatus], Option[BuildStatus]) = {
+
+  protected def calculateStates(results: Seq[BuildStatus]): (Option[BuildStatus], Option[BuildStatus]) = {
     val highestBadPriority = results.filter(_.isBad).sorted.headOption
     val highestGoodPriority = results.filter(_.isGood).sorted.headOption
 
