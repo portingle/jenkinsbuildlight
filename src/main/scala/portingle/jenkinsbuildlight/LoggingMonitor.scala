@@ -8,7 +8,7 @@ object LoggingMonitor extends JenkinsLightBuildMonitor with App {
   start("http://localhost:8080/api/xml")
   
   def start(api: String) {
-    val thread = new MonitorThread(this.jobProcessor)
+    val thread = new MonitorThread(this.updateMonitor)
     thread.start(api)
   }
 

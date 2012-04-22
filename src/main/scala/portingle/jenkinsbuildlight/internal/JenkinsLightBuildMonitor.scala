@@ -12,7 +12,8 @@ trait JenkinsLightBuildMonitor {
 
   protected def lightOff(i: IndicatorColour.Value)
 
-  def jobProcessor(jobs: Seq[Job]) {
+  def updateMonitor(jobs: Seq[Job]) {
+    println(jobs)
     val (greenState, redState) = calculateStates(jobs.map(_.state))
     setGreenLight(greenState)
     setRedLight(redState)
@@ -25,6 +26,7 @@ trait JenkinsLightBuildMonitor {
     val good = (highestGoodPriority, highestBadPriority) match {
       case (n, None) => n
       case (n, Some(Disabled)) => n
+      case (n, Some(UnknownBuildStatus)) => n
       case (Some(RebuildingGoodBuild), _) => Some(RebuildingGoodBuild)
       case (_, Some(_)) => None
     }

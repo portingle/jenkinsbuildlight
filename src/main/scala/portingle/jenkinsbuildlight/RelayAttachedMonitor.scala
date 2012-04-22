@@ -1,22 +1,57 @@
 package portingle.jenkinsbuildlight
 
 import internal.{IndicatorColour, JenkinsLightBuildMonitor, MonitorThread}
-import portingle.kmtronic.{RelayInstance, WindowsComPort, Relay}
+import portingle.kmtronic.{RelayInstance, WindowsComPort, TwoPortKMtronicRelay}
 
 
 object RelayAttachedMonitor extends JenkinsLightBuildMonitor with App {
-  private val relay = new Relay(new WindowsComPort(5), 2)
+  private val relay = new TwoPortKMtronicRelay(new WindowsComPort(5))
 
   start("http://localhost:8080/api/xml")
 
   private val flasher = new Flasher {
-    def add(relay: RelayInstance) = null
-    def remove(relay: RelayInstance) = null
+    var state = true
+    val OnIntervalMs = 1000
+    val OffIntervalMs = 500
+
+    @volatile var relays = List[RelayInstance]()
+
+    val thread = new Thread() {
+      override def run() {
+        while (true) {
+          state = !state
+
+          relays.foreach {
+            relay => if (state) {
+              relay.powerOn()
+            } else {
+              relay.powerOff()
+            }
+          }
+
+          if (state) {
+            Thread.sleep(OnIntervalMs)
+          } else {
+            Thread.sleep(OffIntervalMs)
+          }
+        }
+      }
+    }
+    thread.setDaemon(true)
+    thread.start()
+
+    def add(relay: RelayInstance) {
+      relays = relay :: relays.filterNot(_ == relay)
+    }
+
+    def remove(relay: RelayInstance) {
+      relays = relays.filterNot(_ == relay)
+    }
   }
 
   def start(api: String) {
     relay.open()
-    val thread = new MonitorThread(this.jobProcessor)
+    val thread = new MonitorThread(this.updateMonitor)
     thread.start(api)
   }
 

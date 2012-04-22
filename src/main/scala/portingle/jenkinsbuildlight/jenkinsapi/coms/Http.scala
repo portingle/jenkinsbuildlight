@@ -4,13 +4,9 @@ import java.io.InputStream
 import java.net.URL
 
 private object Http {
-  def request(urlString: String): (Boolean, InputStream) =
-    try {
-      val url = new URL(urlString)
-      val body = url.openStream
-      (true, body)
-    }
-    catch {
-      case ex: Exception => (false, null)
-    }
+  def request(urlString: String): InputStream = {
+    val url = new URL(urlString)
+    url.openStream
+  }
+
 }
