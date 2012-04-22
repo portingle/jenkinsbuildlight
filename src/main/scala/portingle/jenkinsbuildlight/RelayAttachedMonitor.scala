@@ -1,11 +1,11 @@
 package portingle.jenkinsbuildlight
 
-import internal.{IndicatorColour, JenkinsLightBuildMonitor, MonitorThread}
+import internal.{IndicatorColour, NotificationLogic, MonitorThread}
 import jenkinsapi.Job
 import portingle.kmtronic.{RelayInstance, WindowsComPort, TwoPortKMtronicRelay}
 
 
-object RelayAttachedMonitor extends JenkinsLightBuildMonitor with App {
+object RelayAttachedMonitor extends NotificationLogic with App {
   private val relay = new TwoPortKMtronicRelay(new WindowsComPort(5))
 
   start("http://localhost:8080/api/xml")

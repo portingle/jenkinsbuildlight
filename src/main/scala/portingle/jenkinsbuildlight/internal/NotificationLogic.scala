@@ -4,7 +4,7 @@ import portingle.jenkinsbuildlight.internal.IndicatorColour._
 import portingle.jenkinsbuildlight.jenkinsapi.Job
 import portingle.jenkinsbuildlight.jenkinsapi.BuildStatus._
 
-trait JenkinsLightBuildMonitor {
+trait NotificationLogic {
 
   protected def lightOn(i: IndicatorColour.Value)
 

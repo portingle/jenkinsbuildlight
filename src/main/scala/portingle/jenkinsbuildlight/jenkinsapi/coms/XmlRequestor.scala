@@ -6,8 +6,10 @@ object XmlRequestor {
 
   def fetchAndParseURL(URL: String): Elem = {
     val body = Http request (URL)
-    val xml = XML.load(body)
-    body.close()
-    xml
+    try {
+      XML.load(body)
+    } finally {
+      body.close()
+    }
   }
 }

@@ -1,9 +1,9 @@
 package portingle.jenkinsbuildlight
 
-import internal.{IndicatorColour, MonitorThread, JenkinsLightBuildMonitor}
+import internal.{IndicatorColour, MonitorThread, NotificationLogic}
 
 
-object LoggingMonitor extends JenkinsLightBuildMonitor with App {
+object LoggingMonitor extends NotificationLogic with App {
   //val api = "http://ci.jruby.org/api/xml"
   start("http://localhost:8080/api/xml")
   

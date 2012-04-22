@@ -4,7 +4,7 @@ import portingle.jenkinsbuildlight.jenkinsapi.BuildStatus._
 import portingle.jenkinsbuildlight.jenkinsapi.{Job, BuildStatus}
 import org.junit.{Assert, Test}
 
-class JenkinsLightBuildMonitorTest {
+class NotificationLogicTest {
 
   // Green / Red
   val testData: Seq[(Seq[BuildStatus.Value], (String, String))] = Seq(
@@ -63,7 +63,7 @@ class JenkinsLightBuildMonitorTest {
     Assert.assertTrue("Failed : " + failures, failures.length == 0)
   }
 
-  def newTestInstance = new JenkinsLightBuildMonitor {
+  def newTestInstance = new NotificationLogic {
     var redValue: String = _
     var greenValue: String = _
 
