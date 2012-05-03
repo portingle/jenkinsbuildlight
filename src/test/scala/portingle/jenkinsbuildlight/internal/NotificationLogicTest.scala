@@ -6,6 +6,14 @@ import org.junit.{Assert, Test}
 
 class NotificationLogicTest {
 
+  @Test
+  def test1() {
+    val failures = testData.map {
+      runTest(_)
+    }.flatten
+    Assert.assertTrue("Failed : " + failures, failures.length == 0)
+  }
+
   // Green / Red
   val testData: Seq[(Seq[BuildStatus.Value], (String, String))] = Seq(
     (Seq(Bad), ("off", "on")),
@@ -55,13 +63,6 @@ class NotificationLogicTest {
     }
   }
 
-  @Test
-  def test1 {
-    val failures = testData.map {
-      runTest(_)
-    }.flatten
-    Assert.assertTrue("Failed : " + failures, failures.length == 0)
-  }
 
   def newTestInstance = new NotificationLogic {
     var redValue: String = _

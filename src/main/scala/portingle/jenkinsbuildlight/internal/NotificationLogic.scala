@@ -13,7 +13,6 @@ trait NotificationLogic {
   protected def lightOff(i: IndicatorColour.Value)
 
   def updateMonitor(jobs: Seq[Job]) {
-    println(jobs)
     val (greenState, redState) = calculateStates(jobs.map(_.state))
 
     setGreenLight(greenState)

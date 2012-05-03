@@ -6,7 +6,7 @@ import portingle.kmtronic.{RelayInstance, WindowsComPort, TwoPortKMtronicRelay}
 
 
 object RelayAttachedMonitor extends NotificationLogic with App {
-  private val relay = new TwoPortKMtronicRelay(new WindowsComPort(5))
+  private val relay = new TwoPortKMtronicRelay(new WindowsComPort("com5"))
 
   start("http://localhost:8080/api/xml")
 
@@ -17,8 +17,9 @@ object RelayAttachedMonitor extends NotificationLogic with App {
   }
 
   override def updateMonitor(jobs: Seq[Job]) {
-
+    println("")
     try {
+      jobs.foreach(println)
       super.updateMonitor(jobs)
     } catch {
       case ex => {
@@ -56,16 +57,22 @@ object RelayAttachedMonitor extends NotificationLogic with App {
               }
             }
 
-            if (state) {
-              Thread.sleep(OnIntervalMs)
-            } else {
-              Thread.sleep(OffIntervalMs)
-            }
           }
           catch {
             case ex => {
               println("had error while flashing : " + ex)
+              try {
+                relay.open()
+              } catch {
+                case _ =>
+              }
             }
+          }
+
+          if (state) {
+            Thread.sleep(OnIntervalMs)
+          } else {
+            Thread.sleep(OffIntervalMs)
           }
         }
       }
